@@ -9,7 +9,7 @@ env:
   UV_PYTHON: 3.12
   PYTHONUTF8: 1
   FLET_CLI_NO_RICH_OUTPUT: 1
-  SERIOUS_PYTHON_VERSION: 3.12  # 👈 关键：强制打包工具使用 3.12
+  SERIOUS_PYTHON_VERSION: 3.12  # 👈 确保这一行存在且拼写正确
 
 jobs:
   build:
@@ -21,12 +21,12 @@ jobs:
         include:
           - name: windows
             runner: windows-latest
-            build_cmd: "flet build windows --python-version 3.12"
+            build_cmd: "flet build windows"
             artifact_path: build/windows
             needs_linux_deps: false
           - name: apk
             runner: ubuntu-latest
-            build_cmd: "flet build apk --python-version 3.12"
+            build_cmd: "flet build apk"
             artifact_path: build/apk
             needs_linux_deps: true
 
@@ -62,21 +62,11 @@ jobs:
 
       - name: Build app
         shell: bash
-        # 关键：强制将构建日志写入文件，便于排查
         run: |
-          set -e
-          uv run ${{ matrix.build_cmd }} --yes --verbose 2>&1 | tee build_output.log
-
-      # 如果构建失败，自动将日志作为附件上传，方便我们查看
-      - name: Upload Error Log
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.name }}-error-log
-          path: build_output.log
+          # 显式传递 --python-version 参数，确保万无一失
+          uv run ${{ matrix.build_cmd }} --python-version 3.12 --yes --verbose
 
       - name: Upload Artifact
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.name }}-build
