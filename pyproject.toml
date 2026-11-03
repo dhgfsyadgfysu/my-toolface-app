@@ -2,10 +2,10 @@
 name = "ccs-toolface-app"
 version = "0.1.0"
 description = "Built with Artemis."
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dependencies = [
     "artemis-ui",
-    "flet",
+    "flet>=0.86.0",
     "openpyxl",
 ]
 
