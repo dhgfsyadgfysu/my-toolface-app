@@ -1,5 +1,5 @@
 [project]
-name = "ccs¹¤¾ßÃæ½âÂë"
+name = "ccså·¥å…·é¢è§£ç "
 version = "0.1.0"
 description = "Built with Artemis."
 requires-python = ">=3.9"
@@ -8,3 +8,6 @@ dependencies = [
     "flet",
     "openpyxl",
 ]
+
+[tool.flet.android]
+extract_packages = ["openpyxl"]
