@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+.artemis_data/
+build/

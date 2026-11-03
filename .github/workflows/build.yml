@@ -1,0 +1,83 @@
+name: Build CCS工具面解码
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  UV_PYTHON: 3.12
+  PYTHONUTF8: 1
+  FLET_CLI_NO_RICH_OUTPUT: 1
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # -------- Desktop --------
+          - name: linux
+            runner: ubuntu-latest
+            build_cmd: "flet build linux"
+            artifact_path: build/linux
+            needs_linux_deps: true
+          - name: macos
+            runner: macos-latest
+            build_cmd: "flet build macos"
+            artifact_path: build/macos
+            needs_linux_deps: false
+          - name: windows
+            runner: windows-latest
+            build_cmd: "flet build windows"
+            artifact_path: build/windows
+            needs_linux_deps: false
+          # -------- Android --------
+          - name: apk
+            runner: ubuntu-latest
+            build_cmd: "flet build apk"
+            artifact_path: build/apk
+            needs_linux_deps: false
+          # -------- iOS (needs a macOS runner - no way around this, it's Apple's own restriction) --------
+          - name: ipa
+            runner: macos-latest
+            build_cmd: "flet build ipa"
+            artifact_path: build/ipa
+            needs_linux_deps: false
+          # -------- Web --------
+          - name: web
+            runner: ubuntu-latest
+            build_cmd: "flet build web"
+            artifact_path: build/web
+            needs_linux_deps: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install Linux dependencies
+        if: matrix.needs_linux_deps
+        shell: bash
+        run: |
+            sudo apt update --allow-releaseinfo-change
+            LINUX_DEPS="$(uv run flet --version --json | jq -r '.linux_dependencies | join(" ")')"
+            sudo apt-get install -y --no-install-recommends $LINUX_DEPS
+            sudo apt-get clean
+
+      - name: Build app
+        shell: bash
+        run: |
+          uv run ${{ matrix.build_cmd }} --yes --verbose
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}-build-artifact
+          path: ${{ matrix.artifact_path }}
+          if-no-files-found: error
+          overwrite: false
