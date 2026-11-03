@@ -1,5 +1,5 @@
 [project]
-name = "ccs工具面解码"
+name = "ccs-toolface-app"
 version = "0.1.0"
 description = "Built with Artemis."
 requires-python = ">=3.9"
