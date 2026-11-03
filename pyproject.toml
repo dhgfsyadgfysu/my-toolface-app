@@ -1,8 +1,8 @@
-import flet as ft
-
-def main(page: ft.Page):
-    page.title = "测试打包"
-    page.add(ft.Text("Hello! 如果能看到这个，说明环境配置完全成功！", size=30))
-
-if __name__ == '__main__':
-    ft.run(main)
+[project]
+name = "ccs-toolface-app"
+version = "0.1.0"
+description = "Built with Flet."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "flet",
+]
