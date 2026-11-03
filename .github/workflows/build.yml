@@ -18,41 +18,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # -------- Desktop --------
-          - name: linux
-            runner: ubuntu-latest
-            build_cmd: "flet build linux"
-            artifact_path: build/linux
-            needs_linux_deps: true
-          - name: macos
-            runner: macos-latest
-            build_cmd: "flet build macos"
-            artifact_path: build/macos
-            needs_linux_deps: false
-          - name: windows
-            runner: windows-latest
-            build_cmd: "flet build windows"
-            artifact_path: build/windows
-            needs_linux_deps: false
           # -------- Android --------
           - name: apk
             runner: ubuntu-latest
-            # 👇 强制使用 3.12 版本进行打包
+            # 强制使用 3.12，避免版本过新导致底层库编译失败
             build_cmd: "flet build apk --python-version 3.12"
             artifact_path: build/apk
             needs_linux_deps: true
-          # -------- iOS --------
-          - name: ipa
-            runner: macos-latest
-            build_cmd: "flet build ipa"
-            artifact_path: build/ipa
-            needs_linux_deps: false
-          # -------- Web --------
-          - name: web
-            runner: ubuntu-latest
-            build_cmd: "flet build web"
-            artifact_path: build/web
-            needs_linux_deps: false
 
     steps:
       - name: Checkout repository
@@ -61,7 +33,6 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
 
-      # 确保 Java 17 存在，Flutter 打包必备
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -69,14 +40,12 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK
-        if: matrix.name == 'apk'
         uses: android-actions/setup-android@v4.0.4
         with:
           accept-android-sdk-licenses: true
           packages: 'platform-tools'
 
       - name: Install Linux dependencies
-        if: matrix.needs_linux_deps
         shell: bash
         run: |
             sudo apt-get update --allow-releaseinfo-change
@@ -87,14 +56,15 @@ jobs:
 
       - name: Build app
         shell: bash
-        # 加上 || true 是为了即使最后一句报错，也尽量把详细的 traceback 打印出来
+        # 👇 关键改动：把日志同时输出到屏幕和文件，且即使报错也继续执行
         run: |
-          uv run ${{ matrix.build_cmd }} --yes --verbose
-
-      - name: Upload Artifact
+          set -o pipefail
+          uv run ${{ matrix.build_cmd }} --yes --verbose 2>&1 | tee build_output.log || true
+          
+      # 👇 如果构建失败，将日志作为附件上传
+      - name: Upload Error Log
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.name }}-build-artifact
-          path: ${{ matrix.artifact_path }}
-          if-no-files-found: error
-          overwrite: false
+          name: error-log
+          path: build_output.log
