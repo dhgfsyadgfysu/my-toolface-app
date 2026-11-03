@@ -5,9 +5,9 @@ from decimal import Decimal, InvalidOperation
 import io
 import re
 
-from openpyxl import load_workbook, Workbook
-from openpyxl.styles import Font, PatternFill, Alignment
-from openpyxl.utils import get_column_letter
+#from openpyxl import load_workbook, Workbook
+#from openpyxl.styles import Font, PatternFill, Alignment
+#from openpyxl.utils import get_column_letter
 
 # ==================== 核心解码函数 ====================
 DEFAULT_EXCEL_COLUMNS = (
@@ -452,9 +452,9 @@ from decimal import Decimal, InvalidOperation
 import io
 import re
 
-from openpyxl import load_workbook, Workbook
-from openpyxl.styles import Font, PatternFill, Alignment
-from openpyxl.utils import get_column_letter
+#from openpyxl import load_workbook, Workbook
+#from openpyxl.styles import Font, PatternFill, Alignment
+#from openpyxl.utils import get_column_letter
 
 # ==================== 核心解码函数 ====================
 DEFAULT_EXCEL_COLUMNS = (

@@ -5,7 +5,6 @@ description = "Built with Flet."
 requires-python = ">=3.12,<3.13"  # 👈 关键：精确锁定 3.12
 dependencies = [
     "flet",
-    "openpyxl",
 ]
 
 [tool.flet.android]
