@@ -60,12 +60,13 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
 
-      # 👇 新增：自动接受安卓许可协议，解决之前的报错
+      # 👇 修改：升级版本，并指定只安装 platform-tools
       - name: Setup Android SDK
         if: matrix.name == 'apk'
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4.0.4
         with:
           accept-android-sdk-licenses: true
+          packages: 'platform-tools'
 
       - name: Install Linux dependencies
         if: matrix.needs_linux_deps
