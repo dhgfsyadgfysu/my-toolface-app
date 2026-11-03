@@ -1,12 +1,8 @@
-[project]
-name = "ccs-toolface-app"
-version = "0.1.0"
-description = "Built with Flet."
-requires-python = ">=3.12,<3.13"  # 👈 关键：精确锁定 3.12
-dependencies = [
-    "flet",
-]
+import flet as ft
 
-[tool.flet.android]
-# 👈 关键：确保 openpyxl 及其底层依赖都被完整解压
-extract_packages = ["openpyxl", "et_xmlfile"]
+def main(page: ft.Page):
+    page.title = "测试打包"
+    page.add(ft.Text("Hello! 如果能看到这个，说明环境配置完全成功！", size=30))
+
+if __name__ == '__main__':
+    ft.run(main)
