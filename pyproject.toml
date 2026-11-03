@@ -8,7 +8,5 @@ dependencies = [
 ]
 
 [tool.flet.android]
-# 指定最低支持的安卓版本，提升兼容性
-min_sdk_version = 23
-# 明确指定只构建主流的 64 位和 32 位 ARM 架构，排除掉可能导致问题的 x86
+min_sdk_version = 24
 target_arch = ["arm64-v8a", "armeabi-v7a", "x86_64"]
