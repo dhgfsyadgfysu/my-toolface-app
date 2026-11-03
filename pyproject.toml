@@ -1,13 +1,12 @@
 [project]
 name = "ccs-toolface-app"
 version = "0.1.0"
-description = "Built with Artemis."
-requires-python = ">=3.12"
+description = "Built with Flet."
+requires-python = ">=3.9"
 dependencies = [
-    "artemis-ui",
-    "flet>=0.86.0",
+    "flet",
     "openpyxl",
 ]
 
 [tool.flet.android]
-extract_packages = ["openpyxl"]
+extract_packages = ["openpyxl", "et_xmlfile"]
