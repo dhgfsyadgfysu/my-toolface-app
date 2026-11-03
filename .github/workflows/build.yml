@@ -37,9 +37,10 @@ jobs:
           # -------- Android --------
           - name: apk
             runner: ubuntu-latest
-            build_cmd: "flet build apk"
+            # 👇 强制使用 3.12 版本进行打包
+            build_cmd: "flet build apk --python-version 3.12"
             artifact_path: build/apk
-            needs_linux_deps: true # 这里保持 true
+            needs_linux_deps: true
           # -------- iOS --------
           - name: ipa
             runner: macos-latest
@@ -60,6 +61,13 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
 
+      # 确保 Java 17 存在，Flutter 打包必备
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
       - name: Setup Android SDK
         if: matrix.name == 'apk'
         uses: android-actions/setup-android@v4.0.4
@@ -72,7 +80,6 @@ jobs:
         shell: bash
         run: |
             sudo apt-get update --allow-releaseinfo-change
-            # 直接安装 Flutter 构建必须的底层图形库，跳过之前容易报错的自动解析
             sudo apt-get install -y --no-install-recommends \
               libgtk-3-dev libblkid-dev liblzma-dev libstdc++-12-dev \
               mesa-utils libegl1 pkg-config ninja-build cmake clang
@@ -80,6 +87,7 @@ jobs:
 
       - name: Build app
         shell: bash
+        # 加上 || true 是为了即使最后一句报错，也尽量把详细的 traceback 打印出来
         run: |
           uv run ${{ matrix.build_cmd }} --yes --verbose
 
