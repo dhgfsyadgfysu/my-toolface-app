@@ -39,8 +39,8 @@ jobs:
             runner: ubuntu-latest
             build_cmd: "flet build apk"
             artifact_path: build/apk
-            needs_linux_deps: false
-          # -------- iOS (needs a macOS runner - no way around this, it's Apple's own restriction) --------
+            needs_linux_deps: true # 👈 这里改成了 true
+          # -------- iOS --------
           - name: ipa
             runner: macos-latest
             build_cmd: "flet build ipa"
@@ -60,7 +60,6 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
 
-      # 👇 修改：升级版本，并指定只安装 platform-tools
       - name: Setup Android SDK
         if: matrix.name == 'apk'
         uses: android-actions/setup-android@v4.0.4
@@ -74,7 +73,7 @@ jobs:
         run: |
             sudo apt update --allow-releaseinfo-change
             LINUX_DEPS="$(uv run flet --version --json | jq -r '.linux_dependencies | join(" ")')"
-            sudo apt-get install -y --no-install-recommends $LINUX_DEPS
+            sudo apt-get install -y --no-install-recommends $LINUX_DEPS libgtk-3-dev mesa-utils
             sudo apt-get clean
 
       - name: Build app
